@@ -16,9 +16,6 @@ float   getRPM(float dt);
 #define AIN2  19
 #define STBY  23
 
-#define BTN_UP   12
-#define BTN_DOWN 13
-
 #define TEMP_PIN    4
 #define CURRENT_PIN 34
 #define HALL_PIN    27
@@ -87,9 +84,6 @@ void setup() {
   digitalWrite(AIN2, LOW);
   analogWrite(PWMA, motorSpeed);
 
-  pinMode(BTN_UP,   INPUT_PULLDOWN);
-  pinMode(BTN_DOWN, INPUT_PULLDOWN);
-
   lastTime = millis();
 }
 
@@ -97,19 +91,6 @@ void loop() {
   unsigned long now = millis();
   float dt = (now - lastTime) / 1000.0f;
   lastTime = now;
-
-  if (digitalRead(BTN_UP) == HIGH && motorSpeed < 255) {
-    motorSpeed += 5;
-    if (motorSpeed > 255) motorSpeed = 255;
-    analogWrite(PWMA, motorSpeed);
-    delay(150);
-  }
-  if (digitalRead(BTN_DOWN) == HIGH && motorSpeed > 0) {
-    motorSpeed -= 5;
-    if (motorSpeed < 0) motorSpeed = 0;
-    analogWrite(PWMA, motorSpeed);
-    delay(150);
-  }
 
   int16_t ax, ay, az, gx, gy, gz;
   imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
@@ -133,7 +114,6 @@ void loop() {
   if (temp == DEVICE_DISCONNECTED_C) temp = 0.0f;
 
   float current = readCurrent();
-
   float rpm = getRPM(dt);
 
   StaticJsonDocument<256> doc;
